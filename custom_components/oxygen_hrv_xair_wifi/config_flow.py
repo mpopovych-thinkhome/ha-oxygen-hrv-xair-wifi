@@ -13,7 +13,7 @@ from homeassistant.core import HomeAssistant
 from homeassistant.exceptions import HomeAssistantError
 
 from .const import DOMAIN
-from .oxygen_client import CannotConnect
+from .oxygen_client import CannotConnect, OxygenHrvDevice
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -45,24 +45,10 @@ class PlaceholderHub:
 async def validate_input(hass: HomeAssistant, data: dict[str, Any]) -> dict[str, Any]:
     """Validate the user input allows us to connect.
 
-    Data has the keys from STEP_USER_DATA_SCHEMA with values provided by the user.
+    Raises CannotConnect if the device at the given host is not reachable.
     """
-    # TODO validate the data can be used to set up a connection.
-
-    # If your PyPI package is not built with async, pass your methods
-    # to the executor:
-    # await hass.async_add_executor_job(
-    #     your_validate_func, data[CONF_USERNAME], data[CONF_PASSWORD]
-    # )
-
-    hub = PlaceholderHub(data[CONF_HOST])
-
-    # If you cannot connect:
-    # throw CannotConnect
-    # If the authentication is wrong:
-    # InvalidAuth
-
-    # Return info that you want to store in the config entry.
+    device = OxygenHrvDevice(data[CONF_HOST])
+    await device.fetch_state()
     return {"title": "Oxygen HRV"}
 
 
